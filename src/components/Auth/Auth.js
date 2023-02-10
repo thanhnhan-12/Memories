@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -10,6 +10,8 @@ import {
 
 import { GoogleLogin } from "react-google-login";
 import { useDispatch } from 'react-redux';
+import { gapi } from 'gapi-script'
+import { useNavigate } from 'react-router-dom';
 
 import Icon from './icon'
 import LockOutLinedIcon from "@material-ui/icons/LockOpenOutlined";
@@ -25,6 +27,8 @@ function Auth() {
 
   const dispatch = useDispatch();
 
+  const history = useNavigate();
+
   const handleShowPassword = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
@@ -38,6 +42,15 @@ function Auth() {
     handleShowPassword(false);
   };
 
+  // Sign In with Google
+  const clientId = "154089223167-b62v1hakvs4287nnlqk31taeb8i5tu3f.apps.googleusercontent.com"
+
+  useEffect(() => {
+    gapi.load("client: auth2", () => {
+      gapi.auth2.init({clientId: clientId})
+    })
+  }, [])
+
   const googleSuccess = async (res) => {
     const result = res?.profileObj;
     const token = res?.tokenId;
@@ -45,6 +58,7 @@ function Auth() {
     try {
       dispatch({ type: 'AUTH', data: { result, token } });
 
+      history('/');
     } catch (error) {
       console.log(error);
     }
@@ -115,7 +129,7 @@ function Auth() {
           </Button>
 
           <GoogleLogin
-            clientId="154089223167-b62v1hakvs4287nnlqk31taeb8i5tu3f.apps.googleusercontent.com"
+            clientId={clientId}
             render={(renderProps) => (
               <Button
                 className={classes.googleButton}
