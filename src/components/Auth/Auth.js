@@ -17,6 +17,9 @@ import Icon from './icon'
 import LockOutLinedIcon from "@material-ui/icons/LockOpenOutlined";
 import useStyles from "./styles";
 import Input from "./Input";
+import { signin, signup } from '../../actions/auth';
+
+const initialState = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '', };
 
 function Auth() {
   const classes = useStyles();
@@ -24,6 +27,8 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
 
   const [isSignup, setIsSignup] = useState(false);
+
+  const [formData, setFormData] = useState(initialState);
 
   const dispatch = useDispatch();
 
@@ -33,13 +38,23 @@ function Auth() {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  const handleChange = () => {};
+    if(isSignup) {
+      dispatch(signup(formData, history))
+    } else {
+      dispatch(signin(formData, history))
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const switchMode = () => {
     setIsSignup((prevIsSignup) => !prevIsSignup);
-    handleShowPassword(false);
+    setShowPassword(false);
   };
 
   // Sign In with Google
@@ -89,8 +104,8 @@ function Auth() {
                   half
                 />
                 <Input
-                  name="firstName"
-                  label="First Name"
+                  name="lastName"
+                  label="Last Name"
                   handleChange={handleChange}
                   half
                 />
