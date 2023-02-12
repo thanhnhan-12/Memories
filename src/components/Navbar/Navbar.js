@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AppBar, Avatar, Button, Toolbar, Typography } from "@material-ui/core";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import decode from 'jwt-decode'
 import useStyles from "./styles.js";
 import memories from "../../images/memories.png";
@@ -9,7 +9,8 @@ import memories from "../../images/memories.png";
 function Navbar() {
   const classes = useStyles();
 
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+  const {token, user} = useSelector((state) => state.auth);
+
 
   // Sign In with Google
   const dispatch = useDispatch();
@@ -22,21 +23,18 @@ function Navbar() {
     dispatch({ type: 'LOGOUT' });
 
     history('/');
-
-    setUser(null);
   }
 
   useEffect(() => {
-    const token = user?.token;
 
     if(token) {
       const decodedToken = decode(token);
       
-      if(decodedToken.exp * 1000 < new Date().getTime()) logout();
+      // if(decodedToken.exp * 1 < new Date().getTime()) logout();
+      history("/")
     }
+  }, []);
 
-    setUser(JSON.parse(localStorage.getItem('profile')));
-  }, [location]);
 
   return (
     <AppBar className={classes.appBar} position="static" color="inherit">
@@ -53,10 +51,10 @@ function Navbar() {
       </div>
 
       <Toolbar className={classes.toolbar} >
-        {user ? (
+        {token ? (
           <div className={classes.profile}>
-            <Avatar className={classes.purple} alt={user.result.name} src={user.result.imageUrl}>{user.result.name.charAt(0)}</Avatar>
-            <Typography className={classes.userName} variant="h6">{user.result.name}</Typography>
+            <Avatar className={classes.purple} alt={user?.name} src={user?.imageUrl}>{user?.name.charAt(0)}</Avatar>
+            <Typography className={classes.userName} variant="h6">{user?.name}</Typography>
             <Button variant="contained" className={classes.logout} color="secondary" onClick={logout}>Logout</Button>
           </div>
         ) : (

@@ -3,7 +3,6 @@ import React from "react";
 import { Controller } from "react-hook-form";
 
 export const InputField = ({ name, control, label, errors }) => {
-  console.log(errors);
   return (
     <Controller
       name={name}

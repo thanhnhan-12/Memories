@@ -6,7 +6,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import moment from 'moment';
 import useStyles from './styles';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { deletePost, likePost } from '../../../actions/posts';
 
@@ -15,7 +15,10 @@ function Post({ post, setCurrentId }) {
 
   const dispatch = useDispatch();
 
-  const user = JSON.parse(localStorage.getItem('profile'));
+  const {user} = useSelector(state => state.auth);
+
+  console.log(user, post)
+
 
   // Button Like
   const Likes = () => {
@@ -35,11 +38,11 @@ function Post({ post, setCurrentId }) {
     <Card className={classes.card}>
       <CardMedia component="div" className={classes.media} image={post.selectedFile} title={post.title} />
       <div className={classes.overlay}>
-        <Typography variant='h6'>{post.name}</Typography>
+        <Typography variant='h6'>{post?.name}</Typography>
         <Typography variant='body2'>{moment(post.createAt).fromNow()}</Typography>
       </div>
 
-      {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator ) && (
+      {(user?.result?.googleId === post?.creator || user?._id === post?.creator ) && (
         <div className={classes.overlay2}>
           <Button
             style={{ color: 'white' }}
@@ -63,7 +66,7 @@ function Post({ post, setCurrentId }) {
         <Button size='small' color='primary' disabled={!user?.result} onClick={() => dispatch(likePost(post._id))}>
           <Likes/>
         </Button>
-        {(user?.result?.googleId === post?.creator || user?.result?._id === post?.creator ) && (
+        {(user?.result?.googleId === post?.creator || user?._id === post?.creator ) && (
           <Button size='small' color='primary' onClick={() => dispatch(deletePost(post._id))}>
             <DeleteIcon fontSize='small' />
             Delete
